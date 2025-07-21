@@ -8,18 +8,32 @@
 </head>
 <body>
     <div id="app">
-        <h1>حسابداری گیم نت</h1>
+        <div class="header">
+            <h1>حسابداری گیم نت</h1>
+            <div class="theme-switcher">
+                <label for="theme-switch">حالت تاریک</label>
+                <input type="checkbox" id="theme-switch">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>تنظیمات</h2>
+            <div id="device-settings">
+                <h3>دستگاه‌ها</h3>
+                <div id="device-list"></div>
+                <div class="form-group">
+                    <input type="text" id="new-device-name" placeholder="نام دستگاه جدید">
+                    <input type="number" id="new-device-rate" placeholder="هزینه ساعتی (تومان)">
+                    <button id="add-device-btn">افزودن دستگاه</button>
+                </div>
+            </div>
+        </div>
 
         <div class="card">
             <h2>محاسبه هزینه بازی</h2>
             <div class="form-group">
                 <label for="device">انتخاب دستگاه:</label>
-                <select id="device">
-                    <option value="1">دستگاه 1</option>
-                    <option value="2">دستگاه 2</option>
-                    <option value="3">دستگاه 3</option>
-                    <option value="4">دستگاه 4</option>
-                </select>
+                <select id="device-select"></select>
             </div>
             <div class="form-group">
                 <label for="start-time">زمان شروع:</label>

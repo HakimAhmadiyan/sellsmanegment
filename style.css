@@ -118,15 +118,113 @@ button:hover {
     background-color: #218838;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.theme-switcher {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switcher label {
+    margin-right: 10px;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode #app {
+    background: #1e1e1e;
+}
+
+body.dark-mode .card {
+    background: #2c2c2c;
+    box-shadow: 0 2px 5px rgba(255,255,255,0.05);
+}
+
+body.dark-mode h1, body.dark-mode h2 {
+    color: #e0e0e0;
+}
+
+body.dark-mode h2 {
+    border-bottom-color: #444;
+    color: #009bff;
+}
+
+body.dark-mode label {
+    color: #bbb;
+}
+
+body.dark-mode input, body.dark-mode select {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark-mode input:focus, body.dark-mode select:focus {
+    border-color: #009bff;
+}
+
+body.dark-mode #result, body.dark-mode #total-cost, body.dark-mode #report-content {
+    background-color: #333;
+    border-left-color: #009bff;
+}
+
+body.dark-mode #invoice-items li {
+    border-bottom-color: #444;
+}
+
+#device-settings .form-group {
+    display: flex;
+    gap: 10px;
+}
+
+#device-settings button {
+    width: auto;
+    padding: 12px 20px;
+}
+
+.device-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+}
+
+body.dark-mode .device-item {
+    background-color: #333;
+}
+
+.delete-device-btn {
+    background-color: #dc3545;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.delete-device-btn:hover {
+    background-color: #c82333;
+}
+
 @media print {
-    body {
+    body, body.dark-mode {
         background-color: #fff;
+        color: #000;
     }
     #app {
         box-shadow: none;
         padding: 0;
     }
-    .card:not(:nth-of-type(3)), button {
+    .card:not(:nth-of-type(3)), button, .header {
         display: none;
     }
     .card:nth-of-type(3) {

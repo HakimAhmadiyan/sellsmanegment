@@ -4,18 +4,76 @@ document.addEventListener('DOMContentLoaded', () => {
     const addProductBtn = document.getElementById('add-product-btn');
     const invoiceItemsUl = document.getElementById('invoice-items');
     const totalCostDiv = document.getElementById('total-cost');
+    const addDeviceBtn = document.getElementById('add-device-btn');
+    const deviceListDiv = document.getElementById('device-list');
+    const deviceSelect = document.getElementById('device-select');
 
-    const HOURLY_RATE = 10000; // Tomans per hour
+    let devices = JSON.parse(localStorage.getItem('devices')) || [
+        { name: 'دستگاه 1', rate: 10000 },
+        { name: 'دستگاه 2', rate: 10000 },
+    ];
     let totalCost = 0;
     let invoiceItems = [];
+
+    function saveDevices() {
+        localStorage.setItem('devices', JSON.stringify(devices));
+    }
+
+    function renderDevices() {
+        deviceListDiv.innerHTML = '';
+        deviceSelect.innerHTML = '';
+
+        devices.forEach((device, index) => {
+            // Populate device list for settings
+            const deviceEl = document.createElement('div');
+            deviceEl.className = 'device-item';
+            deviceEl.innerHTML = `
+                <span>${device.name} - ${device.rate.toLocaleString('fa-IR')} تومان/ساعت</span>
+                <button class="delete-device-btn" data-index="${index}">حذف</button>
+            `;
+            deviceListDiv.appendChild(deviceEl);
+
+            // Populate device dropdown for calculation
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = device.name;
+            deviceSelect.appendChild(option);
+        });
+    }
+
+    addDeviceBtn.addEventListener('click', () => {
+        const name = document.getElementById('new-device-name').value;
+        const rate = parseFloat(document.getElementById('new-device-rate').value);
+
+        if (name && rate > 0) {
+            devices.push({ name, rate });
+            saveDevices();
+            renderDevices();
+            document.getElementById('new-device-name').value = '';
+            document.getElementById('new-device-rate').value = '';
+        } else {
+            alert('لطفا نام و هزینه ساعتی دستگاه را به درستی وارد کنید.');
+        }
+    });
+
+    deviceListDiv.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-device-btn')) {
+            const index = e.target.dataset.index;
+            devices.splice(index, 1);
+            saveDevices();
+            renderDevices();
+        }
+    });
 
     calculateBtn.addEventListener('click', () => {
         const startTime = document.getElementById('start-time').value;
         const endTime = document.getElementById('end-time').value;
+        const deviceIndex = deviceSelect.value;
 
-        if (startTime && endTime) {
+        if (startTime && endTime && deviceIndex !== null) {
             const start = new Date(startTime);
             const end = new Date(endTime);
+            const device = devices[deviceIndex];
 
             if (start >= end) {
                 resultDiv.textContent = 'زمان پایان باید بعد از زمان شروع باشد.';
@@ -25,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const durationInMs = end - start;
             const durationInHours = durationInMs / (1000 * 60 * 60);
-            const cost = durationInHours * HOURLY_RATE;
+            const cost = durationInHours * device.rate;
 
             const hours = Math.floor(durationInHours);
             const durationInMinutes = Math.floor((durationInMs / (1000 * 60)) % 60);
@@ -37,15 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             resultDiv.style.color = 'black';
 
-            // Add game cost to invoice
             const gameCostItem = {
-                name: `بازی دستگاه ${document.getElementById('device').value}`,
+                name: `بازی ${device.name}`,
                 price: cost
             };
             invoiceItems.push(gameCostItem);
             updateInvoice();
         } else {
-            resultDiv.textContent = 'لطفا هر دو زمان شروع و پایان را وارد کنید.';
+            resultDiv.textContent = 'لطفا زمان شروع، پایان و دستگاه را انتخاب کنید.';
             resultDiv.style.color = 'red';
         }
     });
@@ -116,4 +173,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reportContentDiv.innerHTML = reportHTML;
     });
+
+    renderDevices();
+
+    const themeSwitch = document.getElementById('theme-switch');
+    themeSwitch.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+        // Save theme preference
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Load theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeSwitch.checked = true;
+    }
+
+    function setCurrentTime() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('start-time').value = now.toISOString().slice(0,16);
+    }
+
+    setCurrentTime();
 });
