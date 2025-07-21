@@ -145,27 +145,84 @@ document.addEventListener('DOMContentLoaded', () => {
         window.print();
     });
 
+    const saveInvoiceBtn = document.getElementById('save-invoice-btn');
+    const invoiceListDiv = document.getElementById('invoice-list');
+    let allInvoices = JSON.parse(localStorage.getItem('invoices')) || [];
+
+    function saveAllInvoices() {
+        localStorage.setItem('invoices', JSON.stringify(allInvoices));
+    }
+
+    function renderAllInvoices() {
+        invoiceListDiv.innerHTML = '';
+        allInvoices.forEach((invoice, index) => {
+            const invoiceEl = document.createElement('div');
+            invoiceEl.className = 'invoice-item-stored';
+            invoiceEl.innerHTML = `
+                <span>فاکتور شماره ${invoice.id} - ${new Date(invoice.date).toLocaleString('fa-IR')} - مجموع: ${invoice.total.toLocaleString('fa-IR')} تومان</span>
+                <button class="view-invoice-btn" data-index="${index}">مشاهده</button>
+            `;
+            invoiceListDiv.appendChild(invoiceEl);
+        });
+    }
+
+    saveInvoiceBtn.addEventListener('click', () => {
+        if (invoiceItems.length > 0) {
+            const newInvoice = {
+                id: allInvoices.length + 1,
+                date: new Date(),
+                items: invoiceItems,
+                total: totalCost
+            };
+            allInvoices.push(newInvoice);
+            saveAllInvoices();
+            renderAllInvoices();
+            clearCurrentInvoice();
+            alert('فاکتور با موفقیت ذخیره شد.');
+        } else {
+            alert('فاکتور خالی است.');
+        }
+    });
+
+    function clearCurrentInvoice() {
+        invoiceItems = [];
+        totalCost = 0;
+        updateInvoice();
+        resultDiv.innerHTML = '';
+    }
+
     const generateReportBtn = document.getElementById('generate-report-btn');
     const reportContentDiv = document.getElementById('report-content');
 
     generateReportBtn.addEventListener('click', () => {
-        // For now, the report is based on the current invoice items.
-        // In a real application, this would involve fetching data from a database.
-        const reportStartDate = document.getElementById('report-start-date').value;
-        const reportEndDate = document.getElementById('report-end-date').value;
+        const reportStartDate = new Date(document.getElementById('report-start-date').value);
+        const reportEndDate = new Date(document.getElementById('report-end-date').value);
 
-        if (!reportStartDate || !reportEndDate) {
+        if (isNaN(reportStartDate) || isNaN(reportEndDate)) {
             reportContentDiv.innerHTML = '<p style="color: red;">لطفا تاریخ شروع و پایان گزارش را انتخاب کنید.</p>';
             return;
         }
 
-        let reportHTML = `<h3>گزارش فروش از ${reportStartDate} تا ${reportEndDate}</h3>`;
+        reportEndDate.setHours(23, 59, 59, 999); // Include the whole end day
+
+        const filteredInvoices = allInvoices.filter(invoice => {
+            const invoiceDate = new Date(invoice.date);
+            return invoiceDate >= reportStartDate && invoiceDate <= reportEndDate;
+        });
+
+        let reportHTML = `<h3>گزارش فروش از ${reportStartDate.toLocaleDateString('fa-IR')} تا ${reportEndDate.toLocaleDateString('fa-IR')}</h3>`;
+        if(filteredInvoices.length === 0) {
+            reportHTML += '<p>هیچ فاکتوری در این بازه زمانی یافت نشد.</p>';
+            reportContentDiv.innerHTML = reportHTML;
+            return;
+        }
+
         reportHTML += '<ul>';
         let totalSales = 0;
 
-        invoiceItems.forEach(item => {
-            reportHTML += `<li>${item.name}: ${item.price.toLocaleString('fa-IR')} تومان</li>`;
-            totalSales += item.price;
+        filteredInvoices.forEach(invoice => {
+            reportHTML += `<li>فاکتور شماره ${invoice.id}: ${invoice.total.toLocaleString('fa-IR')} تومان</li>`;
+            totalSales += invoice.total;
         });
 
         reportHTML += '</ul>';
@@ -201,4 +258,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setCurrentTime();
+
+    // Initialize date/time pickers
+    flatpickr("#start-time", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+    flatpickr("#end-time", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+    flatpickr("#report-start-date", {});
+    flatpickr("#report-end-date", {});
+
+    // Tab switching
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const tab = link.dataset.tab;
+
+            tabLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            tabContents.forEach(c => c.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+        });
+    });
+
+    renderAllInvoices();
 });

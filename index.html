@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Cafe Accounting</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,71 +17,95 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2>تنظیمات</h2>
-            <div id="device-settings">
-                <h3>دستگاه‌ها</h3>
-                <div id="device-list"></div>
+        <div class="tabs">
+            <button class="tab-link active" data-tab="billing">صورتحساب</button>
+            <button class="tab-link" data-tab="products">محصولات</button>
+            <button class="tab-link" data-tab="invoices">فاکتورها</button>
+            <button class="tab-link" data-tab="reports">گزارشات</button>
+            <button class="tab-link" data-tab="settings">تنظیمات</button>
+        </div>
+
+        <div id="billing" class="tab-content active">
+            <div class="card">
+                <h2>محاسبه هزینه بازی</h2>
                 <div class="form-group">
-                    <input type="text" id="new-device-name" placeholder="نام دستگاه جدید">
-                    <input type="number" id="new-device-rate" placeholder="هزینه ساعتی (تومان)">
-                    <button id="add-device-btn">افزودن دستگاه</button>
+                    <label for="device-select">انتخاب دستگاه:</label>
+                    <select id="device-select"></select>
+                </div>
+                <div class="form-group">
+                    <label for="start-time">زمان شروع:</label>
+                    <input type="datetime-local" id="start-time">
+                </div>
+                <div class="form-group">
+                    <label for="end-time">زمان پایان:</label>
+                    <input type="datetime-local" id="end-time">
+                </div>
+                <button id="calculate-btn">محاسبه</button>
+                <div id="result"></div>
+            </div>
+            <div class="card">
+                <h2>فاکتور فعلی</h2>
+                <ul id="invoice-items"></ul>
+                <div id="total-cost"></div>
+                <button id="print-invoice-btn">چاپ فاکتور</button>
+                <button id="save-invoice-btn">ذخیره فاکتور</button>
+            </div>
+        </div>
+
+        <div id="products" class="tab-content">
+            <div class="card">
+                <h2>اضافه کردن محصول</h2>
+                <div class="form-group">
+                    <label for="product-name">نام محصول:</label>
+                    <input type="text" id="product-name" placeholder="مثلا: نوشابه">
+                </div>
+                <div class="form-group">
+                    <label for="product-price">قیمت:</label>
+                    <input type="number" id="product-price" placeholder="به تومان">
+                </div>
+                <button id="add-product-btn">اضافه کردن به فاکتور</button>
+            </div>
+        </div>
+
+        <div id="invoices" class="tab-content">
+            <div class="card">
+                <h2>فاکتورهای ذخیره شده</h2>
+                <div id="invoice-list"></div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <h2>گزارشات</h2>
+                <div class="form-group">
+                    <label for="report-start-date">از تاریخ:</label>
+                    <input type="date" id="report-start-date">
+                </div>
+                <div class="form-group">
+                    <label for="report-end-date">تا تاریخ:</label>
+                    <input type="date" id="report-end-date">
+                </div>
+                <button id="generate-report-btn">تولید گزارش</button>
+                <div id="report-content"></div>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h2>تنظیمات</h2>
+                <div id="device-settings">
+                    <h3>دستگاه‌ها</h3>
+                    <div id="device-list"></div>
+                    <div class="form-group">
+                        <input type="text" id="new-device-name" placeholder="نام دستگاه جدید">
+                        <input type="number" id="new-device-rate" placeholder="هزینه ساعتی (تومان)">
+                        <button id="add-device-btn">افزودن دستگاه</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <h2>محاسبه هزینه بازی</h2>
-            <div class="form-group">
-                <label for="device">انتخاب دستگاه:</label>
-                <select id="device-select"></select>
-            </div>
-            <div class="form-group">
-                <label for="start-time">زمان شروع:</label>
-                <input type="datetime-local" id="start-time">
-            </div>
-            <div class="form-group">
-                <label for="end-time">زمان پایان:</label>
-                <input type="datetime-local" id="end-time">
-            </div>
-            <button id="calculate-btn">محاسبه</button>
-            <div id="result"></div>
-        </div>
-
-        <div class="card">
-            <h2>اضافه کردن محصول</h2>
-            <div class="form-group">
-                <label for="product-name">نام محصول:</label>
-                <input type="text" id="product-name" placeholder="مثلا: نوشابه">
-            </div>
-            <div class="form-group">
-                <label for="product-price">قیمت:</label>
-                <input type="number" id="product-price" placeholder="به تومان">
-            </div>
-            <button id="add-product-btn">اضافه کردن</button>
-        </div>
-
-        <div class="card">
-            <h2>فاکتور</h2>
-            <ul id="invoice-items"></ul>
-            <div id="total-cost"></div>
-            <button id="print-invoice-btn">چاپ فاکتور</button>
-        </div>
-
-        <div class="card">
-            <h2>گزارشات</h2>
-            <div class="form-group">
-                <label for="report-start-date">از تاریخ:</label>
-                <input type="date" id="report-start-date">
-            </div>
-            <div class="form-group">
-                <label for="report-end-date">تا تاریخ:</label>
-                <input type="date" id="report-end-date">
-            </div>
-            <button id="generate-report-btn">تولید گزارش</button>
-            <div id="report-content"></div>
-        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="script.js"></script>
 </body>
 </html>

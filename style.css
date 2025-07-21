@@ -215,6 +215,50 @@ body.dark-mode .device-item {
     background-color: #c82333;
 }
 
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #555;
+    transition: all 0.3s;
+}
+
+.tab-link.active {
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+body.dark-mode .tabs {
+    border-bottom-color: #444;
+}
+
+body.dark-mode .tab-link {
+    color: #bbb;
+}
+
+body.dark-mode .tab-link.active {
+    border-bottom-color: #009bff;
+    color: #009bff;
+}
+
 @media print {
     body, body.dark-mode {
         background-color: #fff;
@@ -224,10 +268,23 @@ body.dark-mode .device-item {
         box-shadow: none;
         padding: 0;
     }
-    .card:not(:nth-of-type(3)), button, .header {
+    .tabs, .header, .tab-content:not(#billing), #billing .card:first-child, #billing #save-invoice-btn, #billing #print-invoice-btn {
         display: none;
     }
-    .card:nth-of-type(3) {
+    #billing, #billing .card {
+        display: block;
         border: none;
+        box-shadow: none;
+    }
+    #invoice-items {
+        margin-top: 40px;
+    }
+    #invoice-items::before {
+        content: "فاکتور فروش";
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        display: block;
+        margin-bottom: 20px;
     }
 }
