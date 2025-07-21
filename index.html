@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Cafe Accounting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>حسابداری گیم نت</h1>
+
+        <div class="card">
+            <h2>محاسبه هزینه بازی</h2>
+            <div class="form-group">
+                <label for="device">انتخاب دستگاه:</label>
+                <select id="device">
+                    <option value="1">دستگاه 1</option>
+                    <option value="2">دستگاه 2</option>
+                    <option value="3">دستگاه 3</option>
+                    <option value="4">دستگاه 4</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="start-time">زمان شروع:</label>
+                <input type="datetime-local" id="start-time">
+            </div>
+            <div class="form-group">
+                <label for="end-time">زمان پایان:</label>
+                <input type="datetime-local" id="end-time">
+            </div>
+            <button id="calculate-btn">محاسبه</button>
+            <div id="result"></div>
+        </div>
+
+        <div class="card">
+            <h2>اضافه کردن محصول</h2>
+            <div class="form-group">
+                <label for="product-name">نام محصول:</label>
+                <input type="text" id="product-name" placeholder="مثلا: نوشابه">
+            </div>
+            <div class="form-group">
+                <label for="product-price">قیمت:</label>
+                <input type="number" id="product-price" placeholder="به تومان">
+            </div>
+            <button id="add-product-btn">اضافه کردن</button>
+        </div>
+
+        <div class="card">
+            <h2>فاکتور</h2>
+            <ul id="invoice-items"></ul>
+            <div id="total-cost"></div>
+            <button id="print-invoice-btn">چاپ فاکتور</button>
+        </div>
+
+        <div class="card">
+            <h2>گزارشات</h2>
+            <div class="form-group">
+                <label for="report-start-date">از تاریخ:</label>
+                <input type="date" id="report-start-date">
+            </div>
+            <div class="form-group">
+                <label for="report-end-date">تا تاریخ:</label>
+                <input type="date" id="report-end-date">
+            </div>
+            <button id="generate-report-btn">تولید گزارش</button>
+            <div id="report-content"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
