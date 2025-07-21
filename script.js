@@ -123,8 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addNewProductBtn = document.getElementById('add-new-product-btn');
     const productListDiv = document.getElementById('product-list');
-    const productSelect = document.getElementById('product-select');
-    const addProductToInvoiceBtn = document.getElementById('add-product-to-invoice-btn');
 
     let products = JSON.parse(localStorage.getItem('products')) || [
         { name: 'نوشابه', price: 5000 },
@@ -137,26 +135,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderProducts() {
         productListDiv.innerHTML = '';
-        productSelect.innerHTML = '';
 
         products.forEach((product, index) => {
-            // Populate product list for management
             const productEl = document.createElement('div');
             productEl.className = 'product-item';
             productEl.innerHTML = `
                 <span>${product.name} - ${product.price.toLocaleString('fa-IR')} تومان</span>
                 <div>
+                    <button class="add-to-invoice-btn" data-index="${index}">افزودن به فاکتور</button>
                     <button class="edit-product-btn" data-index="${index}">ویرایش</button>
                     <button class="delete-product-btn" data-index="${index}">حذف</button>
                 </div>
             `;
             productListDiv.appendChild(productEl);
-
-            // Populate product dropdown for invoice
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = `${product.name} - ${product.price.toLocaleString('fa-IR')} تومان`;
-            productSelect.appendChild(option);
         });
     }
 
@@ -172,18 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('new-product-price').value = '';
         } else {
             alert('لطفا نام و قیمت محصول را به درستی وارد کنید.');
-        }
-    });
-
-    addProductToInvoiceBtn.addEventListener('click', () => {
-        const productIndex = productSelect.value;
-        if (productIndex !== null) {
-            const product = products[productIndex];
-            invoiceItems.push({
-                name: product.name,
-                price: product.price
-            });
-            updateInvoice();
         }
     });
 
@@ -204,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveProducts();
                 renderProducts();
             }
+        }
+        if (e.target.classList.contains('add-to-invoice-btn')) {
+            const product = products[index];
+            invoiceItems.push({
+                name: product.name,
+                price: product.price
+            });
+            updateInvoice();
         }
     });
 

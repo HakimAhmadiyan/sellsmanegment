@@ -229,9 +229,13 @@ body.dark-mode .product-item {
     background-color: #333;
 }
 
-.edit-product-btn, .edit-device-btn {
+.edit-product-btn, .edit-device-btn, .add-to-invoice-btn {
     background-color: #ffc107;
     margin-left: 5px;
+}
+
+.add-to-invoice-btn {
+    background-color: #28a745;
 }
 
 .edit-product-btn:hover, .edit-device-btn:hover {
