@@ -29,7 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
             deviceEl.className = 'device-item';
             deviceEl.innerHTML = `
                 <span>${device.name} - ${device.rate.toLocaleString('fa-IR')} تومان/ساعت</span>
-                <button class="delete-device-btn" data-index="${index}">حذف</button>
+                <div>
+                    <button class="edit-device-btn" data-index="${index}">ویرایش</button>
+                    <button class="delete-device-btn" data-index="${index}">حذف</button>
+                </div>
             `;
             deviceListDiv.appendChild(deviceEl);
 
@@ -57,11 +60,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     deviceListDiv.addEventListener('click', (e) => {
+        const index = e.target.dataset.index;
         if (e.target.classList.contains('delete-device-btn')) {
-            const index = e.target.dataset.index;
             devices.splice(index, 1);
             saveDevices();
             renderDevices();
+        }
+        if (e.target.classList.contains('edit-device-btn')) {
+            const device = devices[index];
+            const newName = prompt('نام جدید دستگاه را وارد کنید:', device.name);
+            const newRate = parseFloat(prompt('هزینه ساعتی جدید را وارد کنید:', device.rate));
+
+            if (newName && newRate > 0) {
+                devices[index] = { name: newName, rate: newRate };
+                saveDevices();
+                renderDevices();
+            }
         }
     });
 
@@ -107,22 +121,89 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    addProductBtn.addEventListener('click', () => {
-        const productName = document.getElementById('product-name').value;
-        const productPrice = parseFloat(document.getElementById('product-price').value);
+    const addNewProductBtn = document.getElementById('add-new-product-btn');
+    const productListDiv = document.getElementById('product-list');
+    const productSelect = document.getElementById('product-select');
+    const addProductToInvoiceBtn = document.getElementById('add-product-to-invoice-btn');
 
-        if (productName && !isNaN(productPrice) && productPrice > 0) {
-            const product = {
-                name: productName,
-                price: productPrice
-            };
-            invoiceItems.push(product);
-            updateInvoice();
-            // Clear input fields
-            document.getElementById('product-name').value = '';
-            document.getElementById('product-price').value = '';
+    let products = JSON.parse(localStorage.getItem('products')) || [
+        { name: 'نوشابه', price: 5000 },
+        { name: 'چیپس', price: 10000 },
+    ];
+
+    function saveProducts() {
+        localStorage.setItem('products', JSON.stringify(products));
+    }
+
+    function renderProducts() {
+        productListDiv.innerHTML = '';
+        productSelect.innerHTML = '';
+
+        products.forEach((product, index) => {
+            // Populate product list for management
+            const productEl = document.createElement('div');
+            productEl.className = 'product-item';
+            productEl.innerHTML = `
+                <span>${product.name} - ${product.price.toLocaleString('fa-IR')} تومان</span>
+                <div>
+                    <button class="edit-product-btn" data-index="${index}">ویرایش</button>
+                    <button class="delete-product-btn" data-index="${index}">حذف</button>
+                </div>
+            `;
+            productListDiv.appendChild(productEl);
+
+            // Populate product dropdown for invoice
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${product.name} - ${product.price.toLocaleString('fa-IR')} تومان`;
+            productSelect.appendChild(option);
+        });
+    }
+
+    addNewProductBtn.addEventListener('click', () => {
+        const name = document.getElementById('new-product-name').value;
+        const price = parseFloat(document.getElementById('new-product-price').value);
+
+        if (name && price > 0) {
+            products.push({ name, price });
+            saveProducts();
+            renderProducts();
+            document.getElementById('new-product-name').value = '';
+            document.getElementById('new-product-price').value = '';
         } else {
             alert('لطفا نام و قیمت محصول را به درستی وارد کنید.');
+        }
+    });
+
+    addProductToInvoiceBtn.addEventListener('click', () => {
+        const productIndex = productSelect.value;
+        if (productIndex !== null) {
+            const product = products[productIndex];
+            invoiceItems.push({
+                name: product.name,
+                price: product.price
+            });
+            updateInvoice();
+        }
+    });
+
+    productListDiv.addEventListener('click', (e) => {
+        const index = e.target.dataset.index;
+        if (e.target.classList.contains('delete-product-btn')) {
+            products.splice(index, 1);
+            saveProducts();
+            renderProducts();
+        }
+        if (e.target.classList.contains('edit-product-btn')) {
+            const product = products[index];
+            const newName = prompt('نام جدید محصول را وارد کنید:', product.name);
+            const newPrice = parseFloat(prompt('قیمت جدید محصول را وارد کنید:', product.price));
+
+            if (newName && newPrice > 0) {
+                products[index] = { name: newName, price: newPrice };
+                saveProducts();
+                renderProducts();
+            }
         }
     });
 
@@ -190,6 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateInvoice();
         resultDiv.innerHTML = '';
     }
+
+    const newInvoiceBtn = document.getElementById('new-invoice-btn');
+    newInvoiceBtn.addEventListener('click', () => {
+        if (confirm('آیا مطمئن هستید که می‌خواهید فاکتور فعلی را پاک کنید و یک فاکتور جدید شروع کنید؟')) {
+            clearCurrentInvoice();
+        }
+    });
 
     const generateReportBtn = document.getElementById('generate-report-btn');
     const reportContentDiv = document.getElementById('report-content');
@@ -288,4 +376,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     renderAllInvoices();
+    renderProducts();
+
+    const modal = document.getElementById('invoice-modal');
+    const closeBtn = document.querySelector('.close-btn');
+    const modalInvoiceContent = document.getElementById('modal-invoice-content');
+
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    invoiceListDiv.addEventListener('click', (e) => {
+        if (e.target.classList.contains('view-invoice-btn')) {
+            const index = e.target.dataset.index;
+            const invoice = allInvoices[index];
+            let modalHTML = `
+                <p><strong>شماره فاکتور:</strong> ${invoice.id}</p>
+                <p><strong>تاریخ:</strong> ${new Date(invoice.date).toLocaleString('fa-IR')}</p>
+                <ul>
+            `;
+            invoice.items.forEach(item => {
+                modalHTML += `<li>${item.name}: ${item.price.toLocaleString('fa-IR')} تومان</li>`;
+            });
+            modalHTML += `</ul><p><strong>مجموع: ${invoice.total.toLocaleString('fa-IR')} تومان</strong></p>`;
+            modalInvoiceContent.innerHTML = modalHTML;
+            modal.style.display = 'block';
+        }
+    });
 });

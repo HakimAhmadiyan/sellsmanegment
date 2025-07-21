@@ -12,8 +12,11 @@
         <div class="header">
             <h1>حسابداری گیم نت</h1>
             <div class="theme-switcher">
-                <label for="theme-switch">حالت تاریک</label>
-                <input type="checkbox" id="theme-switch">
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider round"></span>
+                </label>
+                <span>حالت تاریک</span>
             </div>
         </div>
 
@@ -49,21 +52,27 @@
                 <div id="total-cost"></div>
                 <button id="print-invoice-btn">چاپ فاکتور</button>
                 <button id="save-invoice-btn">ذخیره فاکتور</button>
+                <button id="new-invoice-btn">فاکتور جدید</button>
             </div>
         </div>
 
         <div id="products" class="tab-content">
             <div class="card">
-                <h2>اضافه کردن محصول</h2>
+                <h2>مدیریت محصولات</h2>
+                <div id="product-list"></div>
                 <div class="form-group">
-                    <label for="product-name">نام محصول:</label>
-                    <input type="text" id="product-name" placeholder="مثلا: نوشابه">
+                    <input type="text" id="new-product-name" placeholder="نام محصول جدید">
+                    <input type="number" id="new-product-price" placeholder="قیمت (تومان)">
+                    <button id="add-new-product-btn">افزودن محصول</button>
                 </div>
+            </div>
+            <div class="card">
+                <h2>افزودن به فاکتور</h2>
                 <div class="form-group">
-                    <label for="product-price">قیمت:</label>
-                    <input type="number" id="product-price" placeholder="به تومان">
+                    <label for="product-select">انتخاب محصول:</label>
+                    <select id="product-select"></select>
                 </div>
-                <button id="add-product-btn">اضافه کردن به فاکتور</button>
+                <button id="add-product-to-invoice-btn">اضافه کردن به فاکتور</button>
             </div>
         </div>
 
@@ -107,5 +116,12 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="script.js"></script>
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>مشاهده فاکتور</h2>
+            <div id="modal-invoice-content"></div>
+        </div>
+    </div>
 </body>
 </html>
